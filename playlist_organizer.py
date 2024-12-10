@@ -49,6 +49,18 @@ def display_songs(songs):
         for song in songs:
             print(f"{song['title']:<30} {song['artist']:<20} {song['genre']:<15} {song['duration']:<10.2f}")
 
+def get_valid_choice(prompt, valid_choices):
+    """Gets a valid choice from the user."""
+    while True:
+        try:
+            choice = int(input(prompt))
+            if choice in valid_choices:
+                return choice
+            else:
+                print(f"Invalid choice. Please choose from {valid_choices}.")
+        except ValueError:
+            print("Invalid input. Please enter a number.")
+
 def main():
     file_path = input("Enter the path to the CSV file: ")
     songs = read_csv(file_path)
@@ -65,30 +77,31 @@ def main():
         print("5. Display all songs")
         print("6. Exit")
 
-        try:
-            choice = int(input("Enter your choice (1-6): "))
-        except ValueError:
-            print("Invalid input. Please enter a number between 1 and 6.")
-            continue
+        choice = get_valid_choice("Enter your choice (1-6): ", range(1, 7))
 
         if choice == 1:
-            genre = input("Enter genre to filter by: ")
+            genre = input("Enter genre to filter by: ").strip()
             filtered_songs = filter_by_genre(songs, genre)
             display_songs(filtered_songs)
         elif choice == 2:
-            try:
-                min_duration = float(input("Enter minimum duration (in minutes): "))
-                max_duration = float(input("Enter maximum duration (in minutes): "))
-                filtered_songs = filter_by_duration(songs, min_duration, max_duration)
-                display_songs(filtered_songs)
-            except ValueError:
-                print("Invalid input. Please enter valid numbers for duration.")
+            while True:
+                try:
+                    min_duration = float(input("Enter minimum duration (in minutes): "))
+                    max_duration = float(input("Enter maximum duration (in minutes): "))
+                    if min_duration > max_duration:
+                        print("Minimum duration cannot be greater than maximum duration. Please try again.")
+                        continue
+                    filtered_songs = filter_by_duration(songs, min_duration, max_duration)
+                    display_songs(filtered_songs)
+                    break
+                except ValueError:
+                    print("Invalid input. Please enter valid numbers for duration.")
         elif choice == 3:
-            title_keyword = input("Enter keyword to search in title: ")
+            title_keyword = input("Enter keyword to search in title: ").strip()
             filtered_songs = filter_by_title(songs, title_keyword)
             display_songs(filtered_songs)
         elif choice == 4:
-            artist_keyword = input("Enter keyword to search in artist: ")
+            artist_keyword = input("Enter keyword to search in artist: ").strip()
             filtered_songs = filter_by_artist(songs, artist_keyword)
             display_songs(filtered_songs)
         elif choice == 5:
@@ -96,8 +109,6 @@ def main():
         elif choice == 6:
             print("Goodbye!")
             break
-        else:
-            print("Invalid choice. Please choose a number between 1 and 6.")
 
 if __name__ == "__main__":
     main()
