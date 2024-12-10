@@ -7,6 +7,7 @@ def read_csv(file_path):
         with open(file_path, mode='r', encoding='utf-8') as file:
             reader = csv.DictReader(file)
             for row in reader:
+                # Ensure duration is stored as a float for filtering purposes
                 row['duration'] = float(row['duration'])
                 songs.append(row)
         return songs
@@ -27,6 +28,16 @@ def filter_by_duration(songs, min_duration, max_duration):
         song for song in songs
         if min_duration <= song['duration'] <= max_duration
     ]
+
+def filter_by_title(songs, title_keyword):
+    """Filters songs by title containing a keyword."""
+    title_keyword = title_keyword.lower()
+    return [song for song in songs if title_keyword in song['title'].lower()]
+
+def filter_by_artist(songs, artist_keyword):
+    """Filters songs by artist containing a keyword."""
+    artist_keyword = artist_keyword.lower()
+    return [song for song in songs if artist_keyword in song['artist'].lower()]
 
 def display_songs(songs):
     """Displays the list of songs."""
@@ -49,13 +60,15 @@ def main():
         print("\nFilter Options:")
         print("1. Filter by genre")
         print("2. Filter by duration")
-        print("3. Display all songs")
-        print("4. Exit")
+        print("3. Filter by title")
+        print("4. Filter by artist")
+        print("5. Display all songs")
+        print("6. Exit")
 
         try:
-            choice = int(input("Enter your choice (1-4): "))
+            choice = int(input("Enter your choice (1-6): "))
         except ValueError:
-            print("Invalid input. Please enter a number between 1 and 4.")
+            print("Invalid input. Please enter a number between 1 and 6.")
             continue
 
         if choice == 1:
@@ -71,12 +84,20 @@ def main():
             except ValueError:
                 print("Invalid input. Please enter valid numbers for duration.")
         elif choice == 3:
-            display_songs(songs)
+            title_keyword = input("Enter keyword to search in title: ")
+            filtered_songs = filter_by_title(songs, title_keyword)
+            display_songs(filtered_songs)
         elif choice == 4:
+            artist_keyword = input("Enter keyword to search in artist: ")
+            filtered_songs = filter_by_artist(songs, artist_keyword)
+            display_songs(filtered_songs)
+        elif choice == 5:
+            display_songs(songs)
+        elif choice == 6:
             print("Goodbye!")
             break
         else:
-            print("Invalid choice. Please choose a number between 1 and 4.")
+            print("Invalid choice. Please choose a number between 1 and 6.")
 
 if __name__ == "__main__":
     main()
